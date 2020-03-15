@@ -9,39 +9,44 @@ class Solution {
     public double findMedianSortedArrays(int[] nums1, int[] nums2) {
         int length = nums1.length + nums2.length;
         if((length & 1) == 1)
-            return kth(nums1, 0, nums1.length-1, nums2, 0, nums2.length-1, (length+1)/2);
-        else
-            return kth(nums1, 0, nums1.length-1, nums2, 0, nums2.length-1, length/2)+ kth(nums1, 0, nums1.length-1, nums2, 0, nums2.length-1, (length+1)/2);
+            return kth(nums1, 0, nums1.length-1, nums2, 0, nums2.length-1, length/2);
+
+        double first = kth(nums1, 0, nums1.length-1, nums2, 0, nums2.length-1, length/2);
+        double second = kth(nums1, 0, nums1.length-1, nums2, 0, nums2.length-1, length/2+1);
+        return (first+second)/2;
+
     }
-    private int kth(int[] nums1, int begin1, int end1, int[] nums2, int begin2, int end2, int k) {
-        if(nums1.length>nums2.length) {
-            int[] temp = nums1;
-            nums1= nums2;
-            nums2= temp;
+    private double kth(int[] nums1, int begin1, int end1, int[] nums2, int begin2, int end2, int k) {
+        if(end1-begin1>end2-begin2) {
+            return kth(nums2, begin2, end2, nums1, begin1, end1, k);
         }
-        int index = higherBound(nums1, begin1, end1, nums2[k/2]);
-        int numLower = index-begin1+ 1 + k/2+1;
+        int half = (k-1)/2;
+        int index = higherBound(nums1, begin1, end1, nums2[begin2+half]);
+        int numLower = index-begin1+ 1 + half+1;
         if(numLower==k)
-            return nums2[k/2];
+            return nums2[begin2+half];
         else if (numLower>k)
-            return kth(nums1, begin1, index, nums2, begin2, k/2, k);
+            return kth(nums1, begin1, index, nums2, begin2, begin2+half-1, k);
         else
-            return kth(nums1, index+1, end1, nums2, begin2+k/2+1, end2, k-numLower);
+            return kth(nums1, index+1, end1, nums2, begin2+half+1, end2, k-numLower);
     }
 
     private int higherBound(int [] nums, int begin, int end, int target) {
+        int oldbegin = begin;
         while(begin<end){
-            int mid = begin + (end-begin)/2;
-            if(nums[mid]<target) {
-                begin = mid+1;
-            } else if(nums[mid]>target) {
-                end = mid-1;
+            int mid = begin + (end-begin+1)/2;
+            if(nums[mid]<=target) {
+                begin = mid;
             } else
-                begin =mid;
+                end = mid-1;
         }
-        return end;
+        if(end<begin||nums[end]<=target)
+            return end;
+        return oldbegin-1;
     }
 }
+
+
 
 public class MainClass {
     public static int[] stringToIntegerArray(String input) {
