@@ -1,4 +1,4 @@
-package zhenyu.sha.leetcode.searchRange;
+package zhenyu.sha.leetcode.q34;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,43 +6,35 @@ import java.io.InputStreamReader;
 
 class Solution {
     public int[] searchRange(int[] nums, int target) {
-        return new int[]{lowerbound(nums, target), higherbound(nums, target)};
+        return new int[]{lowerbound(nums, target), upperbound(nums,target)};
     }
-    private int lowerbound(int[] nums, int target) {
-        if(nums.length==0)
-            return -1;
+    int lowerbound(int[] nums, int target){
         int begin = 0;
         int end = nums.length-1;
-        while(begin<end) {
+        while(begin<end){
             int mid = begin+ (end-begin)/2;
-            if(nums[mid]< target)
-                begin = mid+1;
-            else if (nums[mid]>target)
-                end = mid-1;
-            else
+            int curVal = nums[mid];
+            if(curVal>=target){
                 end = mid;
+            } else {
+                begin = mid+1;
+            }
         }
-        if(nums[begin]==target)
-            return begin;
-        return -1;
+        return nums[end]==target? end:-1;
     }
-    private int higherbound(int[] nums, int target) {
-        if(nums.length==0)
-            return -1;
+    int upperbound(int[] nums, int target){
         int begin = 0;
         int end = nums.length-1;
-        while(begin<end) {
-            int mid = begin+ (end-begin)/2;
-            if(nums[mid]< target)
-                begin = mid+1;
-            else if (nums[mid]>target)
-                end = mid-1;
-            else
+        while(begin<end){
+            int mid = begin+ (end-begin+1)/2;
+            int curVal = nums[mid];
+            if(curVal<=target){
                 begin = mid;
+            } else {
+                end = mid-1;
+            }
         }
-        if(nums[end]==target)
-            return end;
-        return -1;
+        return nums[begin]==target? begin:-1;
     }
 }
 
