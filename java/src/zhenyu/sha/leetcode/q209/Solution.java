@@ -4,31 +4,29 @@ class Solution {
     public int minSubArrayLen(int s, int[] nums) {
         if(null==nums||nums.length==0)
             return 0;
-        int begin =0;
+        int begin =-1;
         int end =0;
-        int cum = nums[0];
         int ret =Integer.MAX_VALUE;
+        int cum =0;
         while (end<nums.length){
             //try next
-            if(cum>=s) {
-                cum =0;
-                if(end-begin+1<ret)
-                    ret=end-begin+1;
-            }
-            if(end+1<nums.length) {
-                end++;
-                if(cum==0){
-                    begin=end;
+            cum=cum+nums[end];
+            end++;
+            if(cum>=s){
+                if(end-(begin+1)<ret)
+                    ret =end-begin-1;
+                //try reduce, can be empty
+                while(begin+1<end) {
+                    begin ++;
+                    cum=cum-nums[begin];
+                    if(cum<s){
+                        break;
+                    } else if(end-begin-1<ret){
+                        ret =end-begin-1;
+                    }
                 }
-                cum+=nums[end];
             }
-
         }
-        if(cum>=s&&(end-begin+1<ret))
-            ret = end-begin+1;
         return ret==Integer.MAX_VALUE?0:ret;
-    }
-    public static void main(String[]args){
-        System.out.println(new Solution().minSubArrayLen(7, new int[]{2,3,1,2,4,3}));
     }
 }
