@@ -1,6 +1,6 @@
 package zhenyu.sha.leetcode.q1163;
-
-public class SuffixArrayBuilder {
+import  java.util.*;
+class SuffixArrayBuilder {
     static class Result{
         int[] indexToRank;
         boolean allSorted;
