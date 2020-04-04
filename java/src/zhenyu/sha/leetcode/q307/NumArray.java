@@ -1,77 +1,57 @@
 package zhenyu.sha.leetcode.q307;
 
+import java.util.Arrays;
+
 class NumArray {
-    static class STNode {
-        int begin;
-        int end;
-        int val;
-        STNode left;
-        STNode right;
-        public STNode(int begin, int end) {
-            this.begin = begin;
-            this.end = end;
-            if(begin>=end-1)
-                return;
-            int mid = begin+ (end-begin)/2;
-            if(begin<mid){
-                left = new STNode(begin, mid);
-            }
-            if(mid<end) {
-                right = new STNode(mid, end);
-            }
-        }
-        void update(int i, int j) {
-            int mid = begin+ (end-begin)/2;
-            if(i>=begin&&i<mid) {
-                val+=j;
-                if (null!=left)
-                    left.update(i,j);
-            }
-            if(i>=mid&&i<end) {
-                val+=j;
-                if(null!=right)
-                    right.update(i,j);
-            }
-        }
-        public int sumRange(int i, int j) {
-            if(i==begin&&end==j)
-                return val;
-            int mid = begin+ (end-begin)/2;
-            int ret = 0;
-            if(i>=begin) {
-                if(i<mid) {
-                    ret += left.sumRange(i,Math.min(mid,j));
-                }
-                if(j>mid&&j<=end) {
-                    ret+=right.sumRange(Math.max(mid, i), j);
-                }
-            }
-            return ret;
-        }
-    }
-    STNode root;
+
     int nums[];
+    int BIT[];
+    int SiZE ;
     public NumArray(int[] nums) {
         this.nums = nums;
-        root = new STNode(0, nums.length);
-        for(int i =0 ; i<nums.length;i++) {
-            root.update(i, nums[i]);
+        this.SiZE = nums.length+1;
+        this.BIT = new int[SiZE];
+        Arrays.fill(this.BIT, 0);
+        for(int i = 0; i< nums.length; i++) {
+            increase(i+1, nums[i]);
         }
     }
+
     public void update(int i, int val) {
-        root.update(i, val-nums[i]);
+        int increased = val-nums[i];
         nums[i]=val;
+        increase(i+1, increased);
     }
 
     public int sumRange(int i, int j) {
-        return root.sumRange(i,j+1);
+        j+=j;
+        int ret =0;
+        while (i>0||j>0){
+            ret += BIT[j]-BIT[i];
+            i-=i&(-i);
+            j-=j&(-j);
+        }
+        return ret;
     }
-    public static void main(String[]args) {
-        //["NumArray","sumRange","update","sumRange","sumRange","update","update","sumRange","sumRange","update","update"]
-        //[[[-28,-39,53,65,11,-56,-65,-39,-43,97]],[5,6],[9,27],[2,3],[6,7],[1,-82],[3,-72],[3,7],[1,8],[5,13],[4,-67]]
-        int[] nums = new int[]{-28,-39,53,65,11,-56,-65,-39,-43,97};
-        NumArray nA =new NumArray(nums);
-        System.out.println(nA.sumRange(2,3));
-
+    private void increase(int i, int val ) {
+        //to 1111
+        while (i<SiZE) {
+            BIT[i]+=val;
+            i+=i&(-i);
+        }
+    }
+    private int preSum(int i) {
+        int ret = 0;
+        while (i>0){
+            ret+=BIT[i];
+            i-=i&(-i);
+        }
+        return ret;
+    }
+    public static void main(String[] args) {
+        //["NumArray","sumRange","update","sumRange"]
+        //[[[1,3,5]],[0,2],[1,2],[0,2]]
+        NumArray na = new NumArray(new int[]{1,3,5});
+        System.out.println(na.sumRange(0,2));
     }
 }
