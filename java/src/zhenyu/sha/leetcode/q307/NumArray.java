@@ -24,7 +24,7 @@ class NumArray {
     }
 
     public int sumRange(int i, int j) {
-        j+=j;
+        j+=1;
         int ret =0;
         while (i>0||j>0){
             ret += BIT[j]-BIT[i];
