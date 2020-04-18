@@ -38,83 +38,95 @@ class Solution {
         }
     }
     // return 1 if the game is won by Mouse, 2 if the game is won by Cat, and 0 if the game is a draw.
-    // 2 mouse win, 1 draw, 0 catWin, -1 don't know yet
+    // 2 mouse win, 1 draw, 0 catWin
     Map<State, Integer> seenStates = new HashMap<>();
     public int catMouseGame(int[][] graph) {
         seenStates.clear();
         State initState = new State(true, 1, 2);
-        dfs(initState, graph, 0);
-        Integer score = seenStates.get(initState);
+        Set<State> paths = new HashSet<>();
+        int score = dfs(initState, graph, 0, paths);
         if(score==1){
+            //draw
             score = 0;
         } else if(score==0) {
+            // cat win
             score =2;
         } else if(score==2) {
+            // mouse win
             return 1;
         }
         //System.out.println("score="+score);
         return score;
     }
-    void dfs(State state,int[][] graph , int dep){
+    int dfs(State state,int[][] graph , int dep, Set<State> paths ){
         String prefix ="";
         for(int i = 0; i<dep;i++) {
             prefix=prefix+"    ";
         }
-        System.out.println(prefix+ "visiting "+state);
+
         Integer ret = seenStates.get(state);
         if(null!=ret){
-            System.out.println(prefix+"seen "+state.toString()+seenStates.get(state));
-            return;
+            System.out.println(prefix+ "cached "+state+ret);
+            return ret;
         }
-        ret =1;
-        seenStates.put(state, ret);
         if(state.mPos==0) {
             seenStates.put(state, 2);
-            System.out.println(prefix+"mouse "+state.toString()+seenStates.get(state));
-            return;
+            System.out.println(prefix+state.toString()+2);
+            return 2;
         }
         if(state.mPos==state.cPos) {
             seenStates.put(state, 0);
-            System.out.println(prefix+"cat "+state.toString()+seenStates.get(state));
-            return;
+            System.out.println(prefix+state.toString()+0);
+            return 0;
         }
+        paths.add(state);
         if(state.mouse) {
+            ret = Integer.MIN_VALUE;
             for(int nextPos : graph[state.mPos]) {
-
                 State nextState = new State(false, nextPos, state.cPos);
-                dfs(nextState, graph, dep+1);
-                int score =seenStates.get(nextState);
-                if(-1!=score) {
-                    ret = Math.max(ret,score);
-                    System.out.println(prefix+"update mouse "+state.toString()+" "+ret);
+                System.out.println(prefix+ "visiting "+nextState);
+                //default
+                int nextScore = 1;
+                if(!paths.contains(nextState)) {
+                    nextScore= dfs(nextState, graph, dep+1, paths);
                 }
+                ret = Math.max(ret,nextScore);
+                System.out.println(prefix+state.toString()+ret);
+                if(ret ==2){
+                    break;
+                }
+
             }
 
-        }  else {
+        }
+        else {
+            ret = Integer.MAX_VALUE;
             for(int nextPos : graph[state.cPos]) {
-
-                if(nextPos!=0) {
-                    State nextState = new State(true, state.mPos, nextPos);
-                    dfs(nextState, graph,dep+1);
-                    int score = seenStates.get(nextState);
-                    if(-1!=score) {
-                        ret = Math.min(ret,score);
-                        System.out.println(prefix+"update cat "+state.toString()+" "+ret);
+                State nextState = new State(true, state.mPos, nextPos);
+                if(nextPos!=0&&(!paths.contains(nextState))) {
+                    System.out.println(prefix+ "visiting "+nextState);
+                    int nextScore= dfs(nextState, graph, dep+1,paths);
+                    ret = Math.min(ret,nextScore);
+                    System.out.println(prefix+state.toString()+ret);
+                    if(ret ==0){
+                        break;
                     }
-
                 }
             }
+            if(Integer.MAX_VALUE==ret){
+                ret =1;
+            }
         }
-        //update state
-        if(ret!=Integer.MAX_VALUE&&ret!=Integer.MIN_VALUE) {
+        paths.remove(state);
 
-            seenStates.put(state, ret);
-        }
-        System.out.println(prefix+"exit "+state.toString()+seenStates.get(state));
+        seenStates.put(state, ret);
+
+        System.out.println(prefix +"return "+state.toString()+ret);
+        return  ret;
     }
 
     public static void main(String[] args) {
-        int[][]graph = new int[][]{{2,5},{3},{0,4,5},{1,4,5},{2,3},{0,2,3}};
+        int[][]graph = new int[][]{{6},{4},{9},{5},{1,5},{3,4,6},{0,5,10},{8,9,10},{7},{2,7},{6,7}};
         System.out.println(new Solution().catMouseGame(graph));
     }
 }
