@@ -57,11 +57,13 @@ class Solution {
                 //上一步就是想这个颜色
                 if(father.t==color[curState.m][curState.c][curState.t]) {
                     color[father.m][father.c][father.t]=color[curState.m][curState.c][curState.t];
+                    finalizedStates.add(new State(father.m, father.c, father.t));
                 } else{
                     if(degree[father.m][father.c][father.t]==0){
                         //之前没上色，就是活命其他的都是输了
                         if(DRAW==color[father.m][father.c][father.t]){
                             color[father.m][father.c][father.t]=3-color[curState.m][curState.c][curState.t];
+                            finalizedStates.add(new State(father.m, father.c, father.t));
                         }
                     }
                 }
