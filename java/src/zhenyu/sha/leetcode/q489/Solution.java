@@ -22,11 +22,11 @@ interface Robot {
 }
 
 class Solution {
-    static class Node{
+    static class Cell {
         int x;
         int y;
 
-        public Node(int x, int y) {
+        public Cell(int x, int y) {
             this.x = x;
             this.y = y;
         }
@@ -35,9 +35,9 @@ class Solution {
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
-            Node node = (Node) o;
-            return x == node.x &&
-                    y == node.y;
+            Cell cell = (Cell) o;
+            return x == cell.x &&
+                    y == cell.y;
         }
 
         @Override
@@ -45,48 +45,29 @@ class Solution {
             return Objects.hash(x, y);
         }
     };
-    static class State{
-        boolean [] visited = new boolean[4];
-        boolean cleaned;
-    }
-    static class Visiting extends Node {
-        int d;
-        Visiting(int x, int y, int d) {
-            super(x,y);
-            this.d = d;
-        }
-    }
+
+
     public void cleanRoom(Robot robot) {
-        Map<Node, State> graph = new HashMap<>();
-        LinkedList<Visiting> dfsStack = new LinkedList<>();
-        dfsStack.push(new Visiting(0,0, 0));
-        int d = 0;
-        while (!dfsStack.isEmpty()) {
-            Visiting curVisit = dfsStack.pop();
-            State cellState = graph.getOrDefault(curVisit, new State());
-            if(!cellState.cleaned) {
-                robot.clean();
+        Set<Cell> visited = new HashSet<>();
+        dfs(robot, new Cell(0,0), 0, visited);
+    }
+
+    private void dfs(Robot robot, Cell cell, int d, Set<Cell> visited) {
+        visited.add(cell);
+        robot.clean();
+        for(int i=0;i<4;i++){
+            int nextD = (d+i)%4;
+            Cell nextCell = getNextNode(cell.x, cell.y, nextD);
+            if(!visited.contains(nextCell)&&robot.move()){
+                dfs(robot, nextCell, nextD, visited);
+                robot.turnRight();
+                robot.turnRight();
+                robot.move();
+                turnRobot(robot, (nextD+2)%4,(nextD+1)%4);
+            } else {
+                robot.turnRight();
             }
-            cellState.visited[curVisit.d]=true;
-            //other direction into stack
-            for(int i=0; i<4;i++){
-                if(!cellState.visited[i]){
-                    //put to stack
-                    dfsStack.push(new Visiting(curVisit.x, curVisit.y, i));
-                }
-            }
-            //check wether direct equals
-            if(d!=curVisit.d){
-                //turn robot to the direct
-                turnRobot(robot, d, curVisit.d);
-                d=curVisit.d;
-            }
-            Visiting nextVisiting = getNextNode(curVisit.x, curVisit.y, curVisit.d);
-            State nextState = graph.getOrDefault(nextVisiting, new State());
-            //check wether already in stack
-            if(!nextState.visited[curVisit.d]&&robot.move()){
-                dfsStack.push(nextVisiting);
-            }
+
         }
     }
 
@@ -97,13 +78,13 @@ class Solution {
              robot.turnRight();
          } else if(rotate==1){
              robot.turnRight();
-         }else if(rotate==-1){
+         } else if(rotate==-1){
              robot.turnLeft();
          }
     }
 
 
-    private static Visiting getNextNode(int x, int y, int d){
+    private static Cell getNextNode(int x, int y, int d){
         int x1= x;
         int y1 =y;
         switch (d) {
@@ -115,9 +96,10 @@ class Solution {
                 break;
             case 2:
                 x1=x-1;
+                break;
             case 3:
                 y1=y-1;
         }
-        return new Visiting(x1, y1, d);
+        return new Cell(x1, y1);
     }
 }
