@@ -6,35 +6,39 @@ import java.io.InputStreamReader;
 
 class Solution {
     public int[] searchRange(int[] nums, int target) {
-        return new int[]{lowerbound(nums, target), upperbound(nums,target)};
+        return new int[]{findFirst(nums, target), findLast(nums, target)};
     }
-    int lowerbound(int[] nums, int target){
-        int begin = 0;
-        int end = nums.length-1;
-        while(begin<end){
-            int mid = begin+ (end-begin)/2;
-            int curVal = nums[mid];
-            if(curVal>=target){
-                end = mid;
-            } else {
-                begin = mid+1;
-            }
+    private int findFirst(int[] nums, int target) {
+        if(null==nums||nums.length==0) {
+            return -1;
         }
-        return nums[end]==target? end:-1;
-    }
-    int upperbound(int[] nums, int target){
         int begin = 0;
         int end = nums.length-1;
-        while(begin<end){
-            int mid = begin+ (end-begin+1)/2;
-            int curVal = nums[mid];
-            if(curVal<=target){
+        while(begin<end-1){
+            int mid=begin+ (end-begin)/2;
+            if(nums[mid]>=target){
+                end=mid;
+            } else {
                 begin = mid;
-            } else {
-                end = mid-1;
             }
         }
-        return nums[begin]==target? begin:-1;
+        return nums[end]==target?end:-1;
+    }
+    private int findLast(int[] nums, int target) {
+        if(null==nums||nums.length==0) {
+            return -1;
+        }
+        int begin = 0;
+        int end = nums.length-1;
+        while(begin<end-1){
+            int mid=begin+ (end-begin)/2;
+            if(nums[mid]>target){
+                end=mid;
+            } else {
+                begin = mid;
+            }
+        }
+        return nums[begin]==target?begin:-1;
     }
 }
 
