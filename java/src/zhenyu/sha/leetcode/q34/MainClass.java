@@ -12,6 +12,12 @@ class Solution {
         if(null==nums||nums.length==0) {
             return -1;
         }
+        if(nums[0]==target){
+            return 0;
+        }
+        if(nums[0]>target){
+            return -1;
+        }
         int begin = 0;
         int end = nums.length-1;
         while(begin<end-1){
@@ -26,6 +32,12 @@ class Solution {
     }
     private int findLast(int[] nums, int target) {
         if(null==nums||nums.length==0) {
+            return -1;
+        }
+        if(nums[nums.length-1]==target){
+            return nums.length-1;
+        }
+        if(nums[nums.length-1]<target){
             return -1;
         }
         int begin = 0;
