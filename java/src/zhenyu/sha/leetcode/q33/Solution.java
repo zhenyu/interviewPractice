@@ -8,18 +8,21 @@ class Solution {
             int mid = begin + (end-begin)/2;
             if(nums[mid]==target){
                 return mid;
-            } else if(nums[mid]>=nums[begin]) {
+            }
+            if(nums[mid]>nums[begin]) {
                 if(target<nums[mid]&&target>=nums[begin]){
                     end=mid-1;
                 } else {
                     begin = mid+1;
                 }
-            } else {
+            } else if(nums[mid]<nums[begin])  {
                 if(target>nums[mid]&&target<=nums[end]) {
                     begin = mid+1;
                 } else {
                     end = mid-1;
                 }
+            } else {
+                begin++;
             }
         }
         return -1;
