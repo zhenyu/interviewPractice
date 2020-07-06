@@ -6,10 +6,36 @@ class IndexNode implements Comparable<IndexNode>{
         this.val=val;
     }
     public int compareTo(IndexNode o){
-        return Integer.compare(o.val, this.val);
+        int ret= Integer.compare(o.val, this.val);
+        if(ret==0){
+            ret = Integer.compare(o.index, this.index);
+        }
+        return ret;
     }
     int index;
     int val;
+}
+class BIT {
+    int [] vals;
+    BIT(int size) {
+        vals = new int[size+1];
+    }
+    void inc(int index) {
+        index++;
+        while (index<=vals.length-1){
+            vals[index]+=1;
+            index+=index&(-index);
+        }
+    }
+    int getSum(int index) {
+        int cum = 0;
+        index++;
+        while (index>0){
+            cum+=vals[index];
+            index-=index&(-index);
+        }
+        return cum;
+    }
 }
 class Solution {
     public List<Integer> countSmaller(int[] nums) {
@@ -22,18 +48,17 @@ class Solution {
         }
         Arrays.sort(indexNodes);
         Integer[] ret = new Integer[nums.length];
-        TreeSet<Integer> indexSet = new TreeSet<>();
+        BIT bit = new BIT(nums.length);
         for(int i= indexNodes.length-1;i>=0;i--){
             int currentIndex = indexNodes[i].index;
-            ret[currentIndex]= indexSet.tailSet(currentIndex).size();
-            indexSet.add(currentIndex);
+            ret[currentIndex]= bit.getSum(nums.length-1)-bit.getSum(currentIndex);
+            bit.inc(currentIndex);
         }
-
         return Arrays.asList(ret);
     }
 
     public static void main(String[] args) {
-        System.out.println(new Solution().countSmaller(new int[]{5,2,6,1}));
+        System.out.println(new Solution().countSmaller(new int[]{-1}));
     }
 
 }
