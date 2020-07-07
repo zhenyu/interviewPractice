@@ -42,10 +42,11 @@ class Solution {
 
         @Override
         public int hashCode() {
+            //System.out.println("x="+x+",y="+y);
             return Objects.hash(x, y);
         }
     };
-
+    static int[][] turns = {{0,1}, {1,0},{0,-1},{-1,0}};
 
     public void cleanRoom(Robot robot) {
         Set<Cell> visited = new HashSet<>();
@@ -53,53 +54,24 @@ class Solution {
     }
 
     private void dfs(Robot robot, Cell cell, int d, Set<Cell> visited) {
+
         visited.add(cell);
         robot.clean();
         for(int i=0;i<4;i++){
             int nextD = (d+i)%4;
-            Cell nextCell = getNextNode(cell.x, cell.y, nextD);
+            Cell nextCell = new Cell(cell.x+turns[nextD][0], cell.y+turns[nextD][1]);
             if(!visited.contains(nextCell)&&robot.move()){
                 dfs(robot, nextCell, nextD, visited);
                 robot.turnRight();
                 robot.turnRight();
                 robot.move();
-                turnRobot(robot, (nextD+2)%4,(nextD+1)%4);
+                robot.turnLeft();
             } else {
                 robot.turnRight();
             }
 
         }
-    }
 
-    private void turnRobot(Robot robot, int cur, int target) {
-         int rotate = (target-cur)%4;
-         if(Math.abs(rotate)==2) {
-             robot.turnRight();
-             robot.turnRight();
-         } else if(rotate==1){
-             robot.turnRight();
-         } else if(rotate==-1){
-             robot.turnLeft();
-         }
-    }
-
-
-    private static Cell getNextNode(int x, int y, int d){
-        int x1= x;
-        int y1 =y;
-        switch (d) {
-            case 0:
-                x1=x+1;
-                break;
-            case 1:
-                y1=y+1;
-                break;
-            case 2:
-                x1=x-1;
-                break;
-            case 3:
-                y1=y-1;
-        }
-        return new Cell(x1, y1);
     }
 }
+
