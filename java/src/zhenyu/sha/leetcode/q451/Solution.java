@@ -14,7 +14,9 @@ class Solution {
     int index  =0;
     LinkedList<Token> stack = new LinkedList<>();
     public boolean isValid(String code) {
-
+        if (code.length()==0){
+            return false;
+        }
         while (index<code.length()) {
             Token t = getNext(code);
             if(null==t){
@@ -23,15 +25,41 @@ class Solution {
             if (t.type ==Type.START) {
                 stack.push(t);
             } else if (t.type == Type.CLOSE) {
-                if(stack.isEmpty()){
+               boolean everContent = false;
+               boolean everClose = false;
+                while (!stack.isEmpty()) {
+                    Token pre = stack.pop();
+                    if (pre.type != Type.CONTENT){
+                        if (pre.content.compareTo(t.content) != 0) {
+                            return false;
+                        }
+                        everClose = true;
+                        break;
+                    } else {
+                        everContent = true;
+                    }
+                }
+                if (!everClose) {
                     return false;
                 }
-                Token start = stack.pop();
-                if(start.content.compareTo(t.content)!=0){
-                    return false;
+                if (!stack.isEmpty()){
+
+                    Token content = new Token();
+                    content.type = Type.CONTENT;
+                    stack.push(content);
+                } else {
+                    if(!everContent){
+                        return false;
+                    }
                 }
+
+            } else {
+                if (stack.isEmpty()) {
+                        return false;
+                }
+                stack.push(t);
+
             }
-            // we do nothing to the content token
         }
 
         return stack.isEmpty();
@@ -48,22 +76,24 @@ class Solution {
 
                 // parse CDATA
                 index++;
-                if(index+ "[CDATA".length()>code.length()){
+                if(index+ "[CDATA[".length()>code.length()){
                     return null;
                 }
-                if (code.substring(index, index+"[CDATA".length()).compareTo("[CDATA")!=0){
+                if (code.substring(index, index+"[CDATA[".length()).compareTo("[CDATA[")!=0){
                     return null;
                 }
-                index=index+"[CDATA".length();
+                index=index+"[CDATA[".length();
+                boolean closed = false;
                 while (index<code.length()) {
                     if (code.charAt(index)==']'&&index+1<code.length()&&code.charAt(index+1)==']'){
                         index++;
+                        closed= true;
                         break;
                     }
                     index++;
                 }
                 // we should return
-                return result;
+                return closed? result:null;
             } else if (code.charAt(index)=='/') {
                 result.type=Type.CLOSE;
                 index++;
@@ -81,6 +111,9 @@ class Solution {
                 }
                 index++;
             }
+            if (index>=code.length()){
+                return null;
+            }
             //skip the '>'
             result.content=code.substring(startIndex, index);
             index++;
@@ -97,6 +130,6 @@ class Solution {
     }
     public static void main(String[] args) {
         Solution s = new Solution();
-        System.out.println(s.isValid("<A>  <B> </A>   </B>"));
+        System.out.println(s.isValid("<A><A></A></A>"));
     }
 }
