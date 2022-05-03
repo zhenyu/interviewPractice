@@ -1,4 +1,4 @@
-package zhenyu.sha.leetcode.q451;
+package zhenyu.sha.leetcode.q591;
 
 import java.util.*;
 enum Type {
@@ -17,49 +17,32 @@ class Solution {
         if (code.length()==0){
             return false;
         }
+        Token first = null;
         while (index<code.length()) {
             Token t = getNext(code);
             if(null==t){
                 return false;
             }
             if (t.type ==Type.START) {
+                if (null == first) {
+                    first = t;
+                }
                 stack.push(t);
-            } else if (t.type == Type.CLOSE) {
-               boolean everContent = false;
-               boolean everClose = false;
-                while (!stack.isEmpty()) {
-                    Token pre = stack.pop();
-                    if (pre.type != Type.CONTENT){
-                        if (pre.content.compareTo(t.content) != 0) {
-                            return false;
-                        }
-                        everClose = true;
-                        break;
-                    } else {
-                        everContent = true;
-                    }
-                }
-                if (!everClose) {
-                    return false;
-                }
-                if (!stack.isEmpty()){
-
-                    Token content = new Token();
-                    content.type = Type.CONTENT;
-                    stack.push(content);
-                } else {
-                    if(!everContent){
-                        return false;
-                    }
-                }
-
             } else {
                 if (stack.isEmpty()) {
-                        return false;
+                    return false;
                 }
-                stack.push(t);
-
+                if (t.type == Type.CLOSE) {
+                    if (stack.peek().content.compareTo(t.content)!=0){
+                        return false;
+                    }
+                    stack.pop();
+                    if (stack.isEmpty() && first.content.compareTo(t.content)!=0){
+                        return false;
+                    }
+                }
             }
+
         }
 
         return stack.isEmpty();
@@ -85,8 +68,8 @@ class Solution {
                 index=index+"[CDATA[".length();
                 boolean closed = false;
                 while (index<code.length()) {
-                    if (code.charAt(index)==']'&&index+1<code.length()&&code.charAt(index+1)==']'){
-                        index++;
+                    if (code.charAt(index)==']'&&index+2<code.length()&&code.charAt(index+1)==']'&&code.charAt(index+2)=='>'){
+                        index=index+2;
                         closed= true;
                         break;
                     }
