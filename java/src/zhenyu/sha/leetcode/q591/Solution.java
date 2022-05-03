@@ -54,6 +54,9 @@ class Solution {
         }
         if (code.charAt(index)=='<') {
             index++;
+            if(index==code.length()){
+                return null;
+            }
             if(code.charAt(index)=='!') {
                 result.type = Type.CONTENT;
 
@@ -98,6 +101,9 @@ class Solution {
                 return null;
             }
             //skip the '>'
+            if(startIndex==index){
+                return null;
+            }
             result.content=code.substring(startIndex, index);
             index++;
 
