@@ -1,59 +1,30 @@
 package zhenyu.sha.leetcode.q56;
 import java.util.*;
-class Event implements Comparable<Event> {
-    //0 enter, 1, exit
-    int type;
-    int x;
-    Event(int type, int x) {
-        this.type = type;
-        this.x = x;
-    }
-    @Override
-    public int compareTo(Event o) {
-        int ret = this.x-o.x;
-        if(ret!=0)
-            return ret;
-        return this.type-o.type;
-    }
-}
+
 class Solution {
 
     public int[][] merge(int[][] intervals) {
         if(null==intervals||intervals.length==0)
             return new int[][]{};
-        List<List<Integer>> merged = new LinkedList<>();
-        List<Event> events = new ArrayList<>(intervals.length*2);
-        for(int i= 0; i< intervals.length;i++){
-            events.add(new Event(0, intervals[i][0]));
-            events.add(new Event(1, intervals[i][1]));
-        }
-        Collections.sort(events);
-        int count=0;
-        int start =0;
-        for(Event e: events) {
-            if(e.type==0){
-                if(count==0){
-                    start=e.x;
-                }
-                count++;
+        Arrays.sort(intervals, new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                return Integer.compare(o1[0], o2[0]);
+            }
+        });
+        List<int[]> result  = new LinkedList<>();
+        int [] pre = intervals[0];
+        for(int i = 1; i< intervals.length; i++) {
+            int [] current  =  intervals[i];
+            if (current[0]<=pre[1]) {
+                 pre[1] = Math.max(pre[1],current[1]);
             } else {
-                count--;
-                if(count==0&&start!=e.x){
-                    List<Integer> merge = new ArrayList<>(2);
-                    merge.add(start);
-                    merge.add(e.x);
-                }
+                result.add(pre);
+                pre = current;
             }
+        }
 
-        }
-        int[][]ret = new int[][]{};
-        if(merged.size()>0) {
-            ret = new int[merged.size()][2];
-            int i=0;
-            for(List<Integer> interval : merged) {
-                ret[i]=new int[]{interval.get(0), interval.get(1)};
-            }
-        }
-        return ret;
+        result.add(pre);
+        return result.toArray(new int[][]{});
     }
 }
