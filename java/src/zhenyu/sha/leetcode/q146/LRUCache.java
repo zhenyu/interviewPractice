@@ -1,93 +1,84 @@
 package zhenyu.sha.leetcode.q146;
 import java.util.*;
+class Node {
+    Node prev;
+    Node next;
+    int key;
+    int val;
+}
 class LRUCache {
-    class Node {
-        Node next;
-        Node prev;
-        int val;
-        int key;
-    }
     int cap;
-    // with head node, the prev of head is the tail
-    Node head;
-    Map<Integer, Node> kv ;
+    Map<Integer, Node> map = new HashMap<>();
+    Node header ;
     public LRUCache(int capacity) {
         cap = capacity;
-        head = new Node();
-        head.prev=head;
-        kv = new HashMap<>();
+        header = new Node();
+        header.next = header;
+        header.prev = header;
     }
+    private void moveToTail( Node node ){
+        if (header.prev != node) {
+            node.prev.next = node.next;
+            node.next.prev = node.prev;
 
+            node.prev = header.prev;
+            header.prev.next = node;
+            header.prev = node;
+            node.next = header;
+
+        }
+    }
     public int get(int key) {
-        int ret =-1;
-        Node v = kv.get(key);
-        if (null!=v) {
-            ret=v.val;
-            moveToTail(v);
+        int ret = -1;
+        Node node = map.get(key);
+        if (null != node ) {
+            ret = node.val;
+            moveToTail(node);
         }
         return ret;
     }
 
     public void put(int key, int value) {
-        Node v = kv.get(key);
-        if(null!=v){
-            v.val=value;
-            moveToTail(v);
-
+        Node node = map.get(key);
+        if (node!=null) {
+            node.val =value;
+            moveToTail(node);
         } else {
-            if(kv.size()==cap){
-                //remove head;
-                int remove_key = head.next.key;
-                head.next=head.next.next;
-                if(null!= head.next){
-                    head.next.prev=head;
-                }
-                if(head.prev!=head&&head.prev.key==remove_key){
-                    head.prev=head;
-                }
-                kv.remove(remove_key);
+            if (this.cap > map.size()) {
+                node = new Node();
+                node.val = value;
+                node.key = key;
+                node.prev = header.prev;
+                header.prev.next = node;
+                node.next = header;
+                header.prev = node;
+            } else {
+                node = header.next;
+                map.remove(node.key);
+                node.val = value;
+                node.key = key;
+                moveToTail(node);
             }
-            //construct New node and put to tail
-            v = new Node();
-            v.val=value;
-            v.key =key;
-            head.prev.next = v;
-            v.prev = head.prev;
-            head.prev = v;
-            kv.put(key,v);
+            map.put(key, node);
         }
     }
-    private void moveToTail(Node v) {
-        if (head.prev==v)
-            return;
-        // taken from pre and next
-        v.prev.next=v.next;
-        v.next.prev=v.prev;
-        head.prev.next=v;
-        v.prev=head.prev;
-        v.next = null;
-        head.prev= v;
-    }
+
     public static void main(String[] args){
-        //["LRUCache","put","put","put","put","get","get","get","get","put","get","get","get","get","get"]
-        //[[3],[1,1],[2,2],[3,3],[4,4],[4],[3],[2],[1],[5,5],[1],[2],[3],[4],[5]]
-        LRUCache cache = new LRUCache(3);
-        cache.put(1,1);
-        cache.put(2,2);
+        //["LRUCache","put","put","get","put","get","put","get","get","get"]
+        //[[2],[1,0],[2,2],[1],[3,3],[2],[4,4],[1],[3],[4]]
+        LRUCache cache = new LRUCache(2);
+        cache.put(1,0);
+        cache.put(2,2);;
+        cache.get(1);
         cache.put(3,3);
+        cache.get(2);
         cache.put(4,4);
-        cache.get(4);
-        cache.get(3);
-        cache.get(2);
         cache.get(1);
-        cache.put(5,5);
-        cache.get(1);
-        cache.get(2);
         cache.get(3);
         cache.get(4);
-        cache.get(5);
     }
 }
+
 /**
  * Your LRUCache object will be instantiated and called as such:
  * LRUCache obj = new LRUCache(capacity);
