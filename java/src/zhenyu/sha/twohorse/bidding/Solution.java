@@ -1,4 +1,4 @@
-package zhenyu.sha.twhorse.bidding;
+package zhenyu.sha.twohorse.bidding;
 import java.util.*;
 /**
  * bids = [[1, 5, 5, 0], [2, 7, 8, 1], [3, 7, 5, 1], [4, 10, 3, 3]]
