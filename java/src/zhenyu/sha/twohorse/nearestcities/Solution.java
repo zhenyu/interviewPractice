@@ -9,37 +9,49 @@ import java.util.regex.*;
 
 
 public class Solution {
+        /**
+         * @param x: an array of integers, the x coordinates of each city[i]
+         * @param y: an array of integers, the y coordinates of each city[i]
+         * @param c: an array of strings that represent the names of each city[i]
+         * @param q: an array of strings that represent the names of query locations
+         * @return: the closest city for each query
+         */
+        public String[] nearestNeighbor(int[] x, int[] y, String[] c, String[] q) {
+            List<String> result = new LinkedList<>();
+            // write your code here
+            Map<String, int[]> citiesCor = new HashMap<>();
+            Map<Integer, TreeMap<Integer, String>> xList = new HashMap<>();
+            Map<Integer, TreeMap<Integer, String>> yList = new HashMap<>();
 
-//give a list of cities names, x coor of cities, y corr of cities, and a city to look for,
-// find nearest city of the city having same x or y coor as the city
-//if nearest city ore than one, return the city name with largest alphabatical value
+            for (int i =0; i< c.length; i++) {
+                citiesCor.put(c[i], new int[]{x[i], y[i]});
+                TreeMap ycors = xList.getOrDefault(x[i], new TreeMap<>());
+                ycors.put(y[i], c[i]);
 
-//put city with same x  into a hashmap x: list of cities with x coor the same [x,y, index]
-//sor the list of cities in the mapper
-//for each city to find its neibor
-    //generate a min dianstance value
-    //generate a result list
-    //find the neiboring cities(left and right if exists) as potential candidates
-    //binary search for cloest city
-    //add left right return list
-    //add all potential candidates together
-    //set a mindistance value
-    //build result list of indexes of cities based on mindistance
-    //get the name of cities  from index and put into list then sort
+                TreeMap xcors = yList.getOrDefault(x[i], new TreeMap<>());
+                xcors.put(x[i], c[i]);
 
-    public static String nearestStone(String[] citieNames, int[] cityX, int[] cityY, String cityToFind){
+                xList.put(x[i], ycors);
+            }
+            for(String city : q) {
+                result.add(queryNearest(city, citiesCor, xList, yList));
+            }
+            return result.toArray(new String[]{});
 
-        //TODO
+    }
+    String queryNearest(String name , Map<String, int[]> citiesCor, Map<Integer, TreeMap<Integer, String>> xList, Map<Integer, TreeMap<Integer, String>> yList) {
+          String result = "None";
+          int min = Integer.MAX_VALUE;
+          int x = citiesCor.get(name)[0];
+          int y = citiesCor.get(name)[1];
+
+
+          return result;
+    }
+
+    Map.Entry<Integer, String > getNearest(int target, TreeMap<Integer, String> cordinates ) {
         return null;
-
     }
 
-
-    public static void main(String[] args) {
-        String[] citieNames = new String[]{"c1","c2","c3","c4","c5"};
-        int[] cityX = new int[]{0,0,1,1,2};
-        int[] cityY = new int[]{0,1,0,1,2};
-        System.out.print(nearestStone(citieNames, cityX, cityY, "c2"));
-    }
 }
 
