@@ -5,10 +5,10 @@ class Solution {
         int ret = 0;
         Stack<Integer> stack = new Stack<>();
         for(int i=0;i<=heights.length;i++) {
-            int cur = i==heights.length? -1:heights[i];
-            while (!stack.isEmpty()&&cur<=heights[stack.peek()]) {
-                int h = heights[stack.pop()];		//保存栈顶元素信息
-                int w = stack.isEmpty() ? i : i - stack.peek() - 1;
+            int cur = stack.isEmpty()? 0: heights[i];
+            while (stack.size()>0 && cur<=heights[stack.peek()]) {
+                int h = heights[stack.pop()];
+                int w = stack.isEmpty()? i : i-stack.peek()-1;
                 ret = Math.max(ret, h*w);
             }
             stack.push(i);
