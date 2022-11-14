@@ -6,7 +6,7 @@ import java.util.LinkedList;
 public class Solution {
     public static void main(String[] args) {
         int [] ret = new Solution().getCloseDays(
-                new int[]{5, 5,5,5,9,5,5,5,5,5},
+                new int[]{5, 6,8,4,9,10,8,3,6,4},
                 new int[]{1,2,3,4,5,6,7,8,9,10});
         System.out.println(Arrays.toString(ret));
     }
