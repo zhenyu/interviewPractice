@@ -1,117 +1,54 @@
 package zhenyu.sha.leetcode.q772;
 
-import java.util.Stack;
-
-class Token {
-    Token(int type, int val){
-        this.type = type;
-        this.val = val;
-    }
-    int type;
-    int val;
-}
+import java.util.*;
 class Solution {
-    int i;
-    char input[];
-    Token cacheToken;
+
     public int calculate(String s) {
-        i = 0;
-        input=s.toCharArray();
-        cacheToken = null;
-        Stack<Token> stack = new Stack<>();
-        Token cur = getNext(true);
-        while (cur!=null) {
-            if(cur.type==0) {
-                if(stack.size()>0) {
-                    Token next = getNext(false);
-                    if(null==next||next.type<=stack.peek().type){
-                        Token op  = stack.pop();
-
-                        if(op.type==2) {
-                            int first = stack.size()>0?stack.pop().val:0;
-                            if(op.val==0){
-                                //+
-                                cur.val=first+cur.val;
-                            } else {
-                                cur.val=first-cur.val;
-                            }
-                        } else if(op.type==3) {
-                            int first = stack.size()>0?stack.pop().val:0;
-                            if(op.val==0){
-                                //*
-                                cur.val=first*cur.val;
-                            } else {
-                                // div
-                                cur.val=first/cur.val;
-                            }
-                        } else {
-                            getNext(true);
-                        }
-                        continue;
-                    }
-                }
-
+        Stack<Integer> valueStack = new Stack<>();
+        Stack<Integer> signStack = new Stack<>();
+        int sign = 1;
+        int number = 0;
+        int index = 0;
+        int result =0;
+        while (index<s.length()) {
+            char current = s.charAt(index);
+            if(')'==current) {
+                number=result+sign*number;
+                // pop sign
+                sign = signStack.pop();
+                result=valueStack.pop();
+                result+=sign*number;
+                number =0;
+                sign =1;
+            } else if ('('==current) {
+                //push
+                valueStack.push(result);
+                signStack.push(sign);
+                //reset
+                number =0;
+                sign = 1;
+                result =0;
+            } else if('+'==current) {
+                result+=sign*number;
+                sign=1;
+                number =0;
+            } else if ('-'==current) {
+                result+=sign*number;
+                number =0;
+                sign =-1;
+            } else if (Character.isDigit(current)) {
+                number=number*10+current-'0';
             }
-            stack.push(cur);
-            cur=getNext(true);
+            index++;
         }
-        return stack.size()>=1?stack.pop().val:0;
-    }
-    Token getNext(boolean moveForward) {
-        if(i>=input.length){
-            return null;
-        }
-        if(cacheToken==null) {
-            while (i<input.length&&input[i]==' '){
-                i++;
-            }
-            if(i<input.length) {
-                char cur = input[i];
-                i++;
-                switch (cur) {
-                    case '(':
-                        cacheToken= new Token(1, 0);
-                        break;
-                    case ')':
-                        cacheToken= new Token(1, 1);
-                        break;
-                    case '+':
-                        cacheToken= new Token(2, 0);
-                        break;
 
-                    case '-':
-                        cacheToken= new Token(2, 1);
-                        break;
-                    case '*':
-                        cacheToken= new Token(3, 0);
-                        break;
-                    case '/':
-                        cacheToken= new Token(3, 1);
-                        break;
+        result += sign*number;
 
-
-                    default: {
-                        int val = cur-'0';
-                        while (i<input.length&&Character.isDigit(input[i])) {
-                            val=val*10+input[i]-'0';
-                            i++;
-                        }
-                        cacheToken= new Token(0, val);
-                        break;
-                    }
-                }
-
-            }
-
-        }
-        Token result = cacheToken;
-        if(moveForward){
-            cacheToken = null;
-        }
+        //value stack
         return result;
     }
 
     public static void main(String[] args) {
-        System.out.println(new Solution().calculate("2*(5+5*2)/3+(6/2+8)"));
+        System.out.println(new Solution().calculate("1-(     -2)"));
     }
 }
