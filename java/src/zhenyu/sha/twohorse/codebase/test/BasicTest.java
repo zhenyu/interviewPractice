@@ -1,10 +1,10 @@
 package zhenyu.sha.twohorse.codebase.test;
 
-import org.junit.Test;
+//import org.junit.Test;
 
 // test
 public class BasicTest  {
-    @Test
+    //@Test
     public void testBasic() {
         /*codebases = {'A':1, 'B':2, 'C':3, 'D':3, 'E':3}
         dependency = {

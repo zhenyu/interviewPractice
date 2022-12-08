@@ -1,6 +1,4 @@
 package zhenyu.sha.leetcode.q1801;
-import org.junit.experimental.max.MaxHistory;
-
 import java.util.*;
 class Solution {
     static final int PRICE = 0;
