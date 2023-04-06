@@ -4,7 +4,7 @@ class Solution:
         n = len(m)
         c = int((n+1)/2)
         for i in range(c):
-            for j in range (i, n): 
+            for j in range (i, n-1-i): 
                 #counter clock
                 temp = m[i][j]
                 m[i][j] = m[n-1-j][i]
