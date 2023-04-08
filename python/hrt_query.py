@@ -1,11 +1,11 @@
 from typing import *
 class Solution:
-    self.b 
-    self.a
-    self.value_to_index = {} 
+   
+   
     def __init__(self, a:List[int], b:List[int]) -> None:
         self.b = b
         self.a = a
+        self.value_to_index = {} 
         for i in range(len(a)):
             self.value_to_index.setdefault(a[i], {}).add(i)
         
