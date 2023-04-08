@@ -1,11 +1,12 @@
+from typing import *
 class Unit(object):
-    def Add(right: Unit)->Expr:
+    def Add(self, right):
         return Expr('+', self, right)
         
-    def Sub(right: Unit)->Expr:
+    def Sub(self, right):
         return Expr('-', self, right)
     
-    def Mult(right: Expr)->Expr:
+    def Mult(self, right):
         return Expr('*', self, right)
 
 class Lib(Unit):
@@ -13,10 +14,10 @@ class Lib(Unit):
         super().__init__()
         self.value = value
 
-    def toString():
+    def toString(self):
         return self.value
 
-    def simplify():
+    def simplify(self):
         return self
     
 class Expr(Unit):
@@ -27,10 +28,10 @@ class Expr(Unit):
         self.left = left
         self.right = right
 
-    def toString():
+    def toString(self):
         return '('+self.left.toString()+ set.op+ self.right.toString()+')'
 
-    def simplify():
+    def simplify(self):
         lvalue = int(self.left.simplify())
         rvalue = int(self.right.simplify())
         value =0
