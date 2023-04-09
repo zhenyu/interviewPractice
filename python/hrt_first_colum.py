@@ -1,6 +1,6 @@
 from typing import *
 class Solution(object):
-    def fill_first(self, m:List[List[int]])->Tuple(int):
+    def fill_first(self, m:List[List[int]])->Tuple[int, int]:
         parts = []
 
         part =[]
@@ -17,49 +17,63 @@ class Solution(object):
             
             if all_blocks:
                 if len (part) >0:
-                    parts.append((part, left_most))
+                    parts.append((part, left_mosts))
                     part = []
                     left_mosts = []
             else:
                 part.append(line)
-                left_mosts.append (left_most) 
+                left_mosts.append (left_most)
+        
+        if len(part)>0:
+            parts.append((part, left_mosts))
+        r_min =0
+        r_max =0
+        for t in parts:
+            p_min, p_max = self.fill_part(t[0], t[1]) 
+            r_min+=p_min
+            r_max+=p_max
+        return (r_min, r_max)
 
-        min =0
-        max =0
-        for part in parts:
-            p_min, p_max = self.fill_part(part) 
-            min+=p_min
-            max+=p_max
-        return (min, max)
+    def fill_part(self, part:List[List[int]], left_mosts: List[int])->Tuple[int, int]:        
 
-    def fill_part(self, part:List[List[int]], left_mosts: List[int])->Tuple(int, int):        
-
-        min  = 0
-        max = 0
-        base_min = 0
+        
+        r_max = 0
         base_max = 0
-        # from top to botom
-        for row in range (len(part)):
-            if left_mosts[row]>base_min:
-                base_min = left_mosts[row]
-                break
-        pre_row = None
-        while row < len(part):
-            base_max = max(base_max, left_mosts[row])
+        #max
+        for row_index in range(len(part)):
+            row = part[row_index]
+            base_max = max(base_max, left_mosts[row_index])
             sum =0
             for c in range (base_max):
-                sum+=1-row[c]
-            max+=sum    
-
-
-            if pre_row is not None:
-                for c in range(base_min):
-                    if row[c]==0 and pre_row[c]==1:
-                        row[c]=1
-            sum =0 
-            for c in range (base_min):
-                sum += 1-row[c]
-            min+=sum 
-            
+                sum+=(1-row[c])
+            r_max+=sum    
         
-        return (min, max)
+        # min
+        base_min = len(part[0])+1
+        r_min  = 0
+        row_index =0 
+        for row_index in range (len(part)):
+            if left_mosts[row_index]!=0 and left_mosts[row_index]<base_min:
+                base_min = left_mosts[row_index]
+                break
+        if base_min<len(part[0])+1:
+            pre_row = None
+            while row_index < len(part):
+                row = part[row_index]
+                if pre_row is not None:
+                    for c in range(base_min):
+                        if row[c]==0 and pre_row[c]==1:
+                            row[c]=1
+                sum =0 
+                for c in range (base_min):
+                    sum += (1-row[c])
+                r_min+=sum 
+                row_index+=1
+        
+        return (r_min, r_max)
+
+if __name__ == '__main__':
+    f  = Solution()
+    m =[[0, 0,1 ,0], [1, 0, 0, 1],[1, 1, 1,1]]#**[0,0 ,1 ,0], [0, 0, 0, 1]]
+    r = f.fill_first(m)
+    print(r)
