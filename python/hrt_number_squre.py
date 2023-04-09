@@ -16,19 +16,19 @@ class  Solution(object):
                 if d >0:
                     dist_map.setdefault(d, []).append(j)
         #iterate
-        for i in range(len(points)-3):
-            for j in range(i+1, len(points)-2):
-                d=self.dist(points[i], points[j])
+        for p0_index in range(len(points)-3):
+            for p1_index in range(p0_index+1, len(points)-2):
+                d=self.dist(points[p0_index], points[p1_index])
                 if d>0:
-                    p2s = p_dist_map.get(i).get(d)
-                    start =bisect.bisect_right(p2s,j)
+                    p2s = p_dist_map.get(p0_index).get(d)
+                    start =bisect.bisect_right(p2s,p1_index)
                     for k in range(start, len(p2s)):
                         p2_index = p2s[k]
-                        p3s1=p_dist_map.get(j).get(d, [])
+                        p3s1=p_dist_map.get(p1_index).get(d, [])
                         p3s2=p_dist_map.get(p2_index).get(d, [])
                         p3s = set(p3s1).intersection(set(p3s2))
                         for p3_index in p3s:
-                            if self.dist(points[i], points[p3_index])==self.dist(points[j], points[p2_index]):
+                            if self.dist(points[p0_index], points[p3_index])==self.dist(points[p1_index], points[p2_index]):
                                 ret+=1   
         
         return ret
