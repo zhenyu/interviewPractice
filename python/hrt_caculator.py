@@ -1,4 +1,5 @@
 from typing import *
+
 class Unit(object):
     def Add(self, right):
         return Expr('+', self, right)
@@ -42,3 +43,5 @@ class Expr(Unit):
         else:
             value = lvalue * rvalue
         return Lib(str(value))
+
+if __name__ == ''
