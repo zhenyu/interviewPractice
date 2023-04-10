@@ -44,4 +44,3 @@ class Expr(Unit):
             value = lvalue * rvalue
         return Lib(str(value))
 
-if __name__ == ''
